@@ -15,6 +15,7 @@
 - [Kubernetes 实战指导](doc_k8s_actions_guide.md)
 - [Kubernetes 技巧汇总](doc_skills.md)
 - [特别篇：服务网格 | Istio 🆕](./doc_k8s_actions_guide.md#8-服务网格)
+- [Kubernetes Service 实战与网络底层机制深度解析 🆕](doc_service_deep_dive.md)
 
 #### 快速入门指南
 
