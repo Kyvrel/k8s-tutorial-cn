@@ -1965,6 +1965,16 @@ kk apply -f nginx-ingress.yaml
 所以 Nginx Ingress Controller 启动后会默认监听节点的两个随机端口（这里是 31888/30158），分别对应其 Pod 内的 80/443，
 后面讲如何修改为节点固定端口。
 
+---
+
+> [!TIP] 📌【实战扩展】新版集群 Ingress 控制器版本兼容演进与宿主机端口防冲突方案
+> - **控制器版本兼容选型**：原教程使用的 `v1.8.2` 仅针对 K8s 1.27；新版集群（如 1.31~1.37+）需匹配最新发布版 `v1.15.1`，并确保 Multi-Arch（ARM64 + AMD64）原生镜像支持。
+> - **宿主机 80/443 端口防冲突**：自建/多云环境下若宿主机运行了 Caddy/Nginx，避免使用 `LoadBalancer` 触发 K3s ServiceLB 抢占端口，采用官方 Baremetal NodePort 规范（固定 `30080` / `30443`）实现安全解耦。
+> 
+> 👉 **完整实战解析与配置清单请参阅独立扩展篇**：[《Kubernetes Ingress 实战与多云混合架构落地深度解析》](./doc_ingress_deep_dive.md#一ingress-控制器选型与版本兼容演进)
+
+---
+
 ### 8.3 开始测试
 
 准备工作：
@@ -2027,6 +2037,17 @@ $ curl 127.0.0.1:31504/hello
 - [配置证书：ingress-hellok8s-cert.yaml](ingress-hellok8s-cert.yaml)
 - [默认后端：ingress-hellok8s-defaultbackend.yaml](ingress-hellok8s-defaultbackend.yaml)
 - [正则匹配：ingress-hellok8s-regex.yaml](ingress-hellok8s-regex.yaml)
+
+---
+
+> [!TIP] 📌【实战扩展】七层路径分流机制拆解与多架构后端无感平替实战
+> - **为什么必须部署 `httpd`？**：Ingress 属于七层反向代理，部署独立的 Apache `httpd` 静态服务与原有的 `hellok8s` 业务服务，才能直观验证“同一端口入口、不同 URL 路径分流给不同后端（Path-based routing）”的核心能力。
+> - **ARM 架构与多架构后端平替**：直接使用原生多架构镜像 `traefik/whoami` 替代原教程需手动用 Go 编译的 `hellok8s`，自动回显 Hostname 与请求头，免除镜像编译推送流程。
+> - **`rewrite-target: /` 原理与端口对齐**：拆解 URL 路径重写如何防止 Apache 报 404，以及实战中 Service 暴露端口（4001 vs 原文 3000）的精准映射避坑。
+> 
+> 👉 **完整实战解析与流转图解请参阅独立扩展篇**：[《七层 URL 路径分发与 rewrite-target 机制深度拆解》](./doc_ingress_deep_dive.md#四七层-url-路径分发与-rewrite-target-机制深度拆解)
+
+---
 
 ### 8.4 Ingress 高可靠部署
 
